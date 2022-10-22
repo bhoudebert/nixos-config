@@ -1,8 +1,8 @@
-{ config, pkgs , ...}:
+{ config, pkgs, ... }:
 
 {
   # programs.home-manager.enable = "true";
- 
+
   home.username = "bhoudebert";
   home.homeDirectory = "/home/bhoudebert";
 
@@ -15,6 +15,12 @@
     teams
     slack
     git
+    ncdu # Disk space usage analyzer
+    translate-shell
+    # Nix
+    nixpkgs-fmt
+    # Shell
+    zsh
   ];
 
   programs.git = {
@@ -55,6 +61,37 @@
       init = { defaultBranch = "main"; };
     };
   };
+
+  programs.command-not-found.enable = true;
+
+  # automounter for removable media
+  services.udiskie.enable = true;
+
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" "command-not-found" ];
+      theme = "agnoster"; 
+    };
+    shellAliases = {
+      ll = "ls -Gall";
+    };
+    initExtra = ''
+      eval "$(direnv hook zsh)"
+    '';
+  };
+
+  # Provision some files
+  # home.file = {
+  #   ".test.conf" = {
+  #     text = ''
+  #       a = 1
+  #       echo a
+  #     '';
+  #   };
+  # };
 
   # home.stateVersion = "22.05";
 }
