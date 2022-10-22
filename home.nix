@@ -17,10 +17,13 @@
     git
     ncdu # Disk space usage analyzer
     translate-shell
+    powerline-fonts
     # Nix
     nixpkgs-fmt
     # Shell
     zsh
+    # Used for colorizing ccat/cless
+    python39Packages.pygments
   ];
 
   programs.git = {
@@ -72,8 +75,15 @@
     enableAutosuggestions = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "command-not-found" ];
-      theme = "agnoster"; 
+      plugins = [ 
+        "git"
+        "command-not-found"
+        "colorize"
+        "docker"
+        "docker-compose"
+        "emacs"
+       ];
+      theme = "agnoster";
     };
     shellAliases = {
       ll = "ls -Gall";
