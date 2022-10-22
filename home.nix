@@ -29,8 +29,12 @@
     python39Packages.pygments
     # gihub
     gh
+    # Password
+    genpass
     # web3
     ipfs
+    # Doc
+    pandoc
   ];
 
   programs.git = {
