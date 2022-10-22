@@ -29,6 +29,8 @@
     python39Packages.pygments
     # gihub
     gh
+    # web3
+    ipfs
   ];
 
   programs.git = {
@@ -90,6 +92,9 @@
         "encode64"
         "genpass"
         "gh"
+        "gitignore"
+        "ipfs"
+        "jump"
        ];
       theme = "agnoster";
     };
