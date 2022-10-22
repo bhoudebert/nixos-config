@@ -7,7 +7,10 @@
   home.homeDirectory = "/home/bhoudebert";
 
   home.packages = with pkgs; [
+    # Emacs 
     emacs
+    ripgrep
+    #
     vim
     vscode
     spotify
@@ -24,6 +27,8 @@
     zsh
     # Used for colorizing ccat/cless
     python39Packages.pygments
+    # gihub
+    gh
   ];
 
   programs.git = {
@@ -82,6 +87,9 @@
         "docker"
         "docker-compose"
         "emacs"
+        "encode64"
+        "genpass"
+        "gh"
        ];
       theme = "agnoster";
     };
