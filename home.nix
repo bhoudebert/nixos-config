@@ -26,6 +26,7 @@
     # Shell
     zsh
     # Used for colorizing ccat/cless
+    python39Full
     python39Packages.pygments
     # gihub
     gh
