@@ -114,6 +114,8 @@
   };
 
   # Provision some files
+
+  ## This allow discord to start even if it is not on the latest version
   home.file = {
     ".config/discord/settings.json" = {
       text = ''
