@@ -17,10 +17,12 @@
     brave
     teams
     slack
+    discord
     git
     ncdu # Disk space usage analyzer
     translate-shell
     powerline-fonts
+    dbeaver
     # Nix
     nixpkgs-fmt
     # Shell
@@ -112,6 +114,14 @@
   };
 
   # Provision some files
+  home.file = {
+    ".config/discord/settings.json" = {
+      text = ''
+         { "SKIP_HOST_UPDATE": true }
+      '';
+    };
+  };
+
   # home.file = {
   #   ".test.conf" = {
   #     text = ''
