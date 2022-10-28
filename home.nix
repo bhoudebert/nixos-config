@@ -124,14 +124,5 @@
     };
   };
 
-  # home.file = {
-  #   ".test.conf" = {
-  #     text = ''
-  #       a = 1
-  #       echo a
-  #     '';
-  #   };
-  # };
-
   # home.stateVersion = "22.05";
 }
