@@ -90,18 +90,31 @@
     oh-my-zsh = {
       enable = true;
       plugins = [ 
-        "git"
-        "command-not-found"
+        "aws"
+        "catimg"
+        "colored-man-pages"
         "colorize"
-        "docker"
+        "command-not-found"
+        "copybuffer"
+        "copyfile"
+        "copypath"
+        "dircycle"
         "docker-compose"
-        "emacs"
+        "docker"
+        "emoji-clock"
         "encode64"
         "genpass"
         "gh"
-        "gitignore"
+        "git"
+        "git-prompt"
+        "history"
         "ipfs"
+        "isodate"
         "jump"
+        "ripgrep"
+        "rsync"
+        "rust"
+        "sudo"
        ];
       theme = "agnoster";
     };
