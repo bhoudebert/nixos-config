@@ -63,86 +63,54 @@ work.
 Private host aliases are intentionally **not** stored in the main
 development module anymore.
 
-Instead, the repo now ships a ready-to-use local override file:
-[home/dev-private.nix](/home/bhoudebert/nixos/home/dev-private.nix:1)
+Instead, they can live in an optional encrypted secret:
 
-It is imported by default from `configuration.nix`, so you do not need a
-second flake or any extra wiring.
+`secrets/dev-private-hosts.age`
 
-The file starts as a safe no-op:
+That means:
 
-```nix
-{ ... }:
+- the public repo does not contain plaintext client hostnames
+- the normal `nixos-rebuild` command still works
+- there is no second flake, wrapper script, or out-of-repo config
+- if the encrypted file is absent, the config still evaluates cleanly
 
-{
-  networking.extraHosts = ''
-    # 127.0.0.1 kafka
-    # 127.0.0.1 internal-api
-    # 127.0.0.1 client-service
-  '';
-}
+The decrypted plaintext should simply be host lines, for example:
+
+```text
+127.0.0.1 kafka
+127.0.0.1 internal-api
+127.0.0.1 client-service
 ```
 
-To use it, just edit that file locally and uncomment or replace the
-example lines:
+Create or edit it with `agenix`:
 
-```nix
-networking.extraHosts = ''
-  127.0.0.1 kafka
-  127.0.0.1 internal-api
-  127.0.0.1 client-service
-'';
+```bash
+agenix -e secrets/dev-private-hosts.age -i /home/bhoudebert/.ssh/id_ed25519
 ```
 
-Then rebuild normally from this repo:
+Then rebuild as usual:
 
 ```bash
 sudo nixos-rebuild switch --flake .#home
 ```
 
-### Keeping It Out Of Git
-
-Because `home/dev-private.nix` is tracked, local edits would normally
-show up in `git status`.
-
-If you want to keep using the file locally without seeing those changes
-all the time, mark it as local-only in your Git index:
-
-```bash
-git update-index --skip-worktree home/dev-private.nix
-```
-
-This flag is **local Git state**, not repository data. That means:
-
-- it fixes the problem on your current clone
-- each new clone must run the command once for itself
-- Git cannot store this behavior in the repo for everyone automatically
-
-If you ever want Git to track changes to that file again:
-
-```bash
-git update-index --no-skip-worktree home/dev-private.nix
-```
-
-This gives you the simple "one local file" workflow without needing a
-private overlay repository.
+When the encrypted secret exists, `dev.nix` decrypts it through `agenix`
+and appends the non-comment lines into `/etc/hosts` during activation.
+When it does not exist, nothing is appended and there is no first-run
+error.
 
 ### Why Not Agenix
 
-`agenix` is the right tool for secrets like passwords, tokens, and
-service keys. It is **not** the right tool for `/etc/hosts`.
+For this specific repo, `agenix` is the least bad fit because the
+constraints are:
 
-Reasons:
+- keep the workflow on the normal flake rebuild command
+- keep private hostnames out of the public repo
+- avoid wrapper scripts and out-of-repo files
 
-- `/etc/hosts` is assembled as part of the system configuration
-- the host mappings are not true secrets once deployed
-- trying to decrypt them with `agenix` just to copy them into
-  `/etc/hosts` adds complexity without meaningful protection
-
-So the best split is:
-
-- `agenix` for actual secrets
-- a private wrapper module/repo for confidential host aliases
+The tradeoff is that the secret content is plain host lines, not a Nix
+module. That is intentional: it keeps the encrypted payload simple while
+the Nix logic that consumes it stays in [home/dev.nix](/home/bhoudebert/nixos/home/dev.nix:83).
 
 ## Package Groups
 

@@ -1,8 +1,14 @@
 {
+  config,
+  lib,
   pkgs,
   ...
 }:
 
+let
+  devPrivateHostsSecretFile = ../secrets/dev-private-hosts.age;
+  hasDevPrivateHostsSecret = builtins.pathExists devPrivateHostsSecretFile;
+in
 {
   # Desktop front-end for libvirt/QEMU virtual machines.
   programs.virt-manager.enable = true;
@@ -79,6 +85,27 @@
     # Viewer used to connect to local or remote virtual machine consoles.
     virt-viewer
   ];
+
+  # Optional encrypted host aliases for client- or company-specific local
+  # development endpoints. If the encrypted secret is absent, the public config
+  # still evaluates cleanly and /etc/hosts stays unchanged.
+  age.secrets.dev-private-hosts = lib.mkIf hasDevPrivateHostsSecret {
+    file = devPrivateHostsSecretFile;
+    owner = "root";
+    group = "root";
+    mode = "0400";
+  };
+
+  # Merge decrypted private host aliases into /etc/hosts only when the optional
+  # encrypted secret exists and contains at least one non-comment line.
+  system.activationScripts.devPrivateHosts = lib.mkIf hasDevPrivateHostsSecret
+    (lib.stringAfter [ "agenixInstall" "etc" ] ''
+      if ${pkgs.gnugrep}/bin/grep -Eqv '^[[:space:]]*($|#)' ${config.age.secrets.dev-private-hosts.path}; then
+        ${pkgs.coreutils}/bin/install -m 0644 ${config.environment.etc.hosts.source} /etc/hosts
+        ${pkgs.coreutils}/bin/printf '\n# Local private host aliases\n' >> /etc/hosts
+        ${pkgs.coreutils}/bin/cat ${config.age.secrets.dev-private-hosts.path} >> /etc/hosts
+      fi
+    '');
 
   home-manager.users.bhoudebert = { ... }: {
     # Developer git defaults and shortcuts used across all repos on this machine.

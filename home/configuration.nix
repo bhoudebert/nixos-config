@@ -14,7 +14,6 @@
     # Hardware detection plus small focused feature modules.
     ./hardware-configuration.nix
     ./dev.nix
-    ./dev-private.nix
     ./gaming.nix
     ./monitoring.nix
     (import "${home-manager}/nixos")

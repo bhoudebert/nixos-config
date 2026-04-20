@@ -55,6 +55,17 @@ services.grafana.settings.security.secret_key =
 `$__file{...}` is a Grafana feature: Grafana reads the value from the
 file instead of expecting the secret inline in `grafana.ini`.
 
+Another example in this repo is `secrets/dev-private-hosts.age`, which can
+hold private `/etc/hosts` lines such as:
+
+```text
+127.0.0.1 kafka
+127.0.0.1 internal-api
+```
+
+`dev.nix` appends those decrypted lines into `/etc/hosts` during
+activation when that optional secret exists.
+
 ## Create A New Secret
 
 1. Add a rule to `secrets.nix`.

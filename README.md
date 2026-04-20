@@ -19,6 +19,10 @@ NB: for ease of use & flake design `hardware-configuration.nix` is versioned but
 
 `sudo nixos-rebuild switch --flake .#home`
 
+Private local host aliases can live in the encrypted
+`secrets/dev-private-hosts.age`. If present, the same rebuild command will
+merge them into `/etc/hosts`.
+
 For testing file only: `nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."home".config.system.build.toplevel' --no-link
 
 
