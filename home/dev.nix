@@ -35,7 +35,7 @@ in
       # Editors and developer-facing shells.
       kdePackages.kate
       eza
-      emacs
+      emacs-pgtk
       vscode
 
       # Fast local search and file discovery.

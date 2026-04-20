@@ -13,6 +13,27 @@ NB: For obvious reason, the github history will be purge from time to time.
 - [issues.md](./issues.md) - issue log and workarounds
 - [sound-issue.md](./sound-issue.md) - sound troubleshooting notes
 
+## Personal Encrypted Data
+
+The `.age` files currently committed in `secrets/` are **mine's**
+encrypted data, not generic defaults.
+
+If you clone this repo for another machine or another person, you will
+not be able to use them as-is: those `.age` files are encrypted for my
+private key. Replace or rekey them with your own values and your own
+public keys.
+
+Current examples:
+
+- `secrets/grafana-secret-key.age` - local Grafana secret for the monitoring stack
+- `secrets/dev-private-hosts.age` - optional private `/etc/hosts` additions for development
+
+Relevant docs:
+
+- [secrets.md](./secrets.md) - how to create, edit, rotate, and rekey `.age` files
+- [monitoring.md](./monitoring.md) - why Grafana needs its own secret
+- [dev.md](./dev.md) - how encrypted private host aliases are merged into `/etc/hosts`
+
 ## Home machine
 
 NB: for ease of use & flake design `hardware-configuration.nix` is versioned but be sure to override it post first install.

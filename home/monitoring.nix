@@ -242,7 +242,7 @@ in
         settings.process_names = [
           { name = "steam";      comm = [ "steam" "steamwebhelper" "gamescope" "wineserver" "wine64-preloader" "wine-preloader" "proton" ]; }
           { name = "browser";    comm = [ "firefox" "librewolf" "chromium" "chrome" "brave" "google-chrome-stable" ]; }
-          { name = "ide";        comm = [ "code" "code-oss" "nvim" "vim" "emacs" "idea" "pycharm" "goland" "clion" "webstorm" ]; }
+          { name = "ide";        comm = [ "code" "code-oss" "nvim" "vim" "emacs" "emacs-pgtk" "idea" "pycharm" "goland" "clion" "webstorm" ]; }
           { name = "build";      comm = [ "cc1" "cc1plus" "g++" "gcc" "ld" "rustc" "cargo" "nix" "nix-build" "nix-instantiate" "nixos-rebuild" "go" "mvn" "gradle" ]; }
           { name = "docker";     comm = [ "dockerd" "containerd" "containerd-shim-runc-v2" "docker-proxy" ]; }
           { name = "monitoring"; comm = [ "grafana-server" "prometheus" "node_exporter" "nvidia_gpu_export" "cadvisor" "process-exporter" "smartctl_exporter" ]; }
