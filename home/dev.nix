@@ -58,13 +58,21 @@ in
       manix
       nix-index
       nixfmt
+      # Language servers used by Nix editors and Doom/Emacs integrations.
+      nil
+      nixd
 
       # Local container tooling for development environments.
       docker
       docker-compose
 
-      # Common runtime/tooling baseline for JavaScript-heavy projects.
+      # Common runtime/tooling baseline for editor integrations and language work.
       nodejs_25
+      python3
+      pandoc
+      go-grip
+      github-copilot-cli
+      maven
 
       # GUI tools for backend/API/database work.
       dbeaver-bin

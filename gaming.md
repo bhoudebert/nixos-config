@@ -67,7 +67,7 @@ sudo nixos-rebuild switch --flake .#home
 ### Support tooling for PTS graphics tests
 
 - `vulkan-tools`
-  Diagnostics such as `vulkaninfo`. Use this to verify Vulkan before
+  Diagnostics such as `vulkaninfo`. Use this to verify Vulkan befork
   blaming a benchmark.
 
 - `gcc`, `meson`, `ninja`, `pkg-config`, Vulkan/X11/Wayland/DRM headers
