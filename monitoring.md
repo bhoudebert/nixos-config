@@ -1,8 +1,9 @@
-# Monitoring stack (`monitoring.nix`)
+# Monitoring Stack (`modules/nixos/profiles/monitoring`)
 
 Prometheus + Grafana + three exporters, all localhost-only, anonymous
-Admin access to Grafana. Configured declaratively from `monitoring.nix`
-and brought up by `nixos-rebuild switch --flake .#home`.
+Admin access to Grafana. Configured declaratively from
+`modules/nixos/profiles/monitoring/system.nix` and brought up by
+`nixos-rebuild switch --flake .#home`.
 
 ## Data flow
 
@@ -225,7 +226,7 @@ A handful of bits that aren't obvious if you come from other distros:
 
 ## Dashboard — "System Overview"
 
-Provisioned from monitoring.nix — do **not** edit it through the
+Provisioned from `modules/nixos/profiles/monitoring/system.nix` — do **not** edit it through the
 Grafana UI as changes in `/var/lib/grafana/dashboards/` are managed by
 systemd-tmpfiles and will be overwritten on rebuild.
 
@@ -252,7 +253,7 @@ The `74` is a fixed baseline covering components that have no live
 sensor — DDR5 RGB DIMMs, NVMe + SATA SSDs, AIO pump, 7 LED fans,
 chipset/VRM/mobo, and USB peripherals. The `1.14` is the PSU
 efficiency factor for ~88% Gold under typical load. Tweak either
-constant directly in `monitoring.nix` and rebuild.
+constant directly in `modules/nixos/profiles/monitoring/system.nix` and rebuild.
 
 ### Container panels and the friendly-name join
 
@@ -368,9 +369,9 @@ useful.
 
 ## Files
 
-- `monitoring.nix` — the full module (exporters, Prometheus, Grafana,
-  cAdvisor, process_exporter, textfile exporter, dashboard JSON, kernel
-  module, capabilities).
+- `modules/nixos/profiles/monitoring/system.nix` — the full monitoring module
+  (exporters, Prometheus, Grafana, cAdvisor, process_exporter, textfile
+  exporter, dashboard JSON, kernel module, capabilities).
 - `/var/lib/prometheus2/` — Prometheus TSDB (metric data).
 - `/var/lib/grafana/` — Grafana SQLite + provisioned dashboards dir.
 - `/var/lib/prometheus-node-exporter-text-files/` — textfile collector

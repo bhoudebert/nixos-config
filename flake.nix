@@ -1,4 +1,6 @@
 {
+  # Flake entrypoint for this machine repo.
+  # It pins upstream inputs and exposes one NixOS host named `home`.
   description = "Home machine NixOS";
 
   inputs = {
@@ -16,15 +18,19 @@
       # Main desktop/workstation configuration.
       home =
         let
+          # Single target architecture for this machine.
           system = "x86_64-linux";
         in
         nixpkgs.lib.nixosSystem {
           inherit system;  # Change this if the target machine uses another architecture.
+          # Make flake inputs available to downstream modules through specialArgs.
           specialArgs = attrs;
           # Compose the system from the base config plus extra modules.
           modules = [
-            ./home/configuration.nix  # Main machine configuration.
+            ./hosts/home/default.nix  # Main machine configuration.
+            # Declarative Flatpak support.
             nix-flatpak.nixosModules.nix-flatpak
+            # Age-encrypted secret management.
             agenix.nixosModules.default
             {
               # Install the agenix CLI so secrets can be edited and rekeyed locally.

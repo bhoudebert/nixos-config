@@ -1,17 +1,17 @@
-# Development Stack (`dev.nix`)
+# Development Stack (`modules/nixos/profiles/dev`)
 
-This module groups together development tooling that is useful on a
-workstation but is not part of the base operating system.
+This profile groups together development tooling that is useful on a
+workstation but is not part of the core operating system baseline.
 
-The idea is the same as `gaming.nix`:
+The split is:
 
-- keep `configuration.nix` focused on machine and desktop basics
-- keep `dev.nix` focused on source control, editors, local infra, and
-  developer-facing utilities
+- `modules/nixos/core/` for machine-wide boot/desktop/user defaults
+- `modules/nixos/profiles/dev/system.nix` for services and system packages
+- `modules/nixos/profiles/dev/home-manager.nix` for user shell/git config
 
 ## What Lives Here
 
-`dev.nix` currently owns:
+The dev profile currently owns:
 
 - Git configuration and aliases
 - developer shell setup in `zsh`
@@ -42,7 +42,7 @@ This is the "global developer muscle memory" section.
 - `$HOME/.local/bin` appended to `PATH`
 
 The base machine still chooses `zsh` as the login shell in
-`configuration.nix`; `dev.nix` only adds the richer workflow config.
+`modules/nixos/core/programs.nix`; the dev profile only adds the richer workflow config.
 
 ### Containers And Virtual Machines
 
@@ -57,6 +57,44 @@ This module enables:
 
 That covers both local container workflows and desktop virtual machine
 work.
+
+### VPN Proxy Bridge
+
+For company VPN access through the Ubuntu VM, the dev profile also enables
+Privoxy as a local HTTP proxy on the host.
+
+The expected flow is:
+
+1. Connect the VPN inside the VM.
+2. Open a SOCKS tunnel from the host to the VM:
+
+   ```bash
+   ssh -N -D 127.0.0.1:1085 user@192.168.122.220
+   ```
+
+3. Privoxy forwards normal HTTP proxy traffic to that SOCKS tunnel:
+
+   ```nix
+   services.privoxy = {
+     enable = true;
+     settings = {
+       listen-address = "127.0.0.1:8118";
+       forward-socks5 = "/ 127.0.0.1:1085 .";
+     };
+   };
+   ```
+
+4. Test from the host with:
+
+   ```bash
+   curl -x http://127.0.0.1:8118 https://idpb2e-rec.adeo.com/.well-known/openid-configuration
+   ```
+
+Apply the service with the normal rebuild command:
+
+```bash
+sudo nixos-rebuild switch --flake .#home
+```
 
 ### Local Host Aliases
 
@@ -94,7 +132,7 @@ Then rebuild as usual:
 sudo nixos-rebuild switch --flake .#home
 ```
 
-When the encrypted secret exists, `dev.nix` decrypts it through `agenix`
+When the encrypted secret exists, the dev profile decrypts it through `agenix`
 and appends the non-comment lines into `/etc/hosts` during activation.
 When it does not exist, nothing is appended and there is no first-run
 error.
@@ -110,11 +148,12 @@ constraints are:
 
 The tradeoff is that the secret content is plain host lines, not a Nix
 module. That is intentional: it keeps the encrypted payload simple while
-the Nix logic that consumes it stays in [home/dev.nix](/home/bhoudebert/nixos/home/dev.nix:83).
+the Nix logic that consumes it stays in [system.nix](/home/bhoudebert/nixos/modules/nixos/profiles/dev/system.nix:1).
 
 ## Package Groups
 
-The user package list in `dev.nix` is intentionally grouped by purpose.
+The user package list in `modules/nixos/profiles/dev/system.nix` is intentionally
+grouped by purpose.
 
 ### Editors And IDEs
 
@@ -147,7 +186,7 @@ The user package list in `dev.nix` is intentionally grouped by purpose.
 - `docker`
 - `docker-compose`
 
-These stay in `dev.nix` because they are used as part of the local
+These stay in the dev profile because they are used as part of the local
 development toolchain, not because the base OS needs them.
 
 ### Runtime / App Tooling
@@ -163,14 +202,20 @@ development toolchain, not because the base OS needs them.
 - `unzip` - extract archives
 - `bubblewrap` - unprivileged sandboxing, useful for local tooling
 
+### Other Useful Packages In This Profile
+
+- `virt-viewer` - VM console viewer for libvirt/virt-manager guests
+- `proton-vpn` - desktop VPN client mainly used during work/dev connectivity flows
+- `onedrive` - sync client for work/personal file exchange
+
 ## Why It Is Separate
 
 This split makes the repo easier to reason about:
 
-- `configuration.nix` answers: "What does this machine need to boot and
+- `modules/nixos/core/` answers: "What does this machine need to boot and
   behave like my desktop?"
-- `dev.nix` answers: "What do I need to build, run, debug, and test
-  software here?"
+- `modules/nixos/profiles/dev/` answers: "What do I need to build, run,
+  debug, and test software here?"
 
 That separation is useful when:
 

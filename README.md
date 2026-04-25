@@ -1,8 +1,9 @@
-# NIXOS
+# NixOS
 
-As it is for a personal machine, let's avoid /etc/nixos base config especially if you want any llm to work over the files.
+This repo keeps the machine configuration in-project instead of in `/etc/nixos`,
+which makes it easier to inspect, review, and automate against the actual files.
 
-NB: For obvious reason, the github history will be purge from time to time.
+Git history may be rewritten occasionally because this is a personal machine repo.
 
 ## Docs
 
@@ -13,10 +14,10 @@ NB: For obvious reason, the github history will be purge from time to time.
 - [issues.md](./issues.md) - issue log and workarounds
 - [sound-issue.md](./sound-issue.md) - sound troubleshooting notes
 
-## Personal Encrypted Data
+## Encrypted Data
 
-The `.age` files currently committed in `secrets/` are **mine's**
-encrypted data, not generic defaults.
+The `.age` files currently committed in `secrets/` are personal encrypted data,
+not generic defaults.
 
 If you clone this repo for another machine or another person, you will
 not be able to use them as-is: those `.age` files are encrypted for my
@@ -34,19 +35,43 @@ Relevant docs:
 - [monitoring.md](./monitoring.md) - why Grafana needs its own secret
 - [dev.md](./dev.md) - how encrypted private host aliases are merged into `/etc/hosts`
 
-## Home machine
+## Host
 
-NB: for ease of use & flake design `hardware-configuration.nix` is versioned but be sure to override it post first install.
+`hosts/home/hardware-configuration.nix` is versioned for convenience, but it is
+still generated host-specific state. Re-check it after first install or major
+hardware changes.
 
 `sudo nixos-rebuild switch --flake .#home`
+
+When a rebuild changes critical components such as DBus, prefer the safe path:
+
+```bash
+sudo nixos-rebuild boot --flake .#home
+sudo reboot
+```
+
+## Layout
+
+The repo now follows a more dendritic NixOS layout:
+
+- `hosts/home/` contains the host entrypoint and host-specific hardware leaf
+- `modules/nixos/core/` contains the shared machine trunk: boot, locale, users, desktop baseline, secrets, and Home Manager glue
+- `modules/nixos/profiles/` contains feature branches such as `dev`, `gaming`, `monitoring`, and `desktop/hyprland`, each split into system and Home Manager leaves where useful
 
 Private local host aliases can live in the encrypted
 `secrets/dev-private-hosts.age`. If present, the same rebuild command will
 merge them into `/etc/hosts`.
 
-For testing file only: `nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."home".config.system.build.toplevel' --no-link
+For evaluation-only testing:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' build \
+  --print-out-paths '.#nixosConfigurations."home".config.system.build.toplevel' \
+  --no-link
+```
 
 
-## Laptop machine
+## Other Hosts
 
-sudo nixos-rebuild switch --flake .#framework
+`framework` is mentioned here as a future/secondary host target, but it is not
+currently defined in this tree.

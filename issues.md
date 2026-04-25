@@ -1,5 +1,8 @@
 # Issues log
 
+This file is a short incident log: what broke, what evidence was collected,
+what workaround was confirmed, and what to revisit later.
+
 ## Plasma Wayland shell missing after sleep resume
 
 Date observed: 2026-04-19

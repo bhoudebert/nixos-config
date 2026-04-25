@@ -4,20 +4,25 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
+  # Auto-detected low-level hardware support imported from nixpkgs.
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
+  # Drivers required in the initrd so the machine can find its root disk/USB.
   boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "thunderbolt" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
+  # Host CPU virtualization support used by local VMs.
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
+  # Root filesystem for the installed system.
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/443c603a-e4e4-45dd-b02b-0ee6e31cc7df";
       fsType = "ext4";
     };
 
+  # EFI system partition used by systemd-boot.
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/6827-F003";
       fsType = "vfat";
@@ -26,6 +31,7 @@
 
   swapDevices = [ ];
 
+  # Architecture and microcode defaults inferred for this specific machine.
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

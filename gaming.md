@@ -1,7 +1,9 @@
-# Gaming and benchmark stack (`gaming.nix`)
+# Gaming and Benchmark Stack (`modules/nixos/profiles/gaming`)
 
-This machine's gaming and GPU benchmark setup is declared in
-`home/gaming.nix`.
+This machine's gaming and GPU benchmark setup is declared in the gaming profile:
+
+- `modules/nixos/profiles/gaming/system.nix` for Steam, benchmark packages, and runtime environment
+- `modules/nixos/profiles/gaming/home-manager.nix` for the Steam wrapper and MangoHud config
 
 Apply changes with:
 
@@ -67,7 +69,7 @@ sudo nixos-rebuild switch --flake .#home
 ### Support tooling for PTS graphics tests
 
 - `vulkan-tools`
-  Diagnostics such as `vulkaninfo`. Use this to verify Vulkan befork
+  Diagnostics such as `vulkaninfo`. Use this to verify Vulkan before
   blaming a benchmark.
 
 - `gcc`, `meson`, `ninja`, `pkg-config`, Vulkan/X11/Wayland/DRM headers
@@ -125,6 +127,17 @@ vulkaninfo | less
   preset if you want easier public comparison.
 - For Linux-native benchmarking, prefer `vkmark` and
   `unigine-superposition` over fighting `3DMark` through Proton.
+
+## Environment Choices
+
+The gaming profile also sets a few environment variables intentionally:
+
+- `GBM_BACKEND=nvidia-drm` - nudges GBM/Wayland paths toward the NVIDIA DRM stack
+- `__GLX_VENDOR_LIBRARY_NAME=nvidia` - avoids GLX vendor ambiguity
+- `LIBVA_DRIVER_NAME=nvidia` - keeps video acceleration aligned with the active GPU stack
+
+The same profile also exposes development headers and pkg-config paths because
+some Phoronix Test Suite graphics workloads build locally on first run.
 
 ## Verifying which GPU is really used
 

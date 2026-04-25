@@ -1,8 +1,7 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
 let
-  # Local-only service ports. Keeping them in one place makes the Prometheus
-  # scrape targets and Grafana wiring easier to follow.
+  # Local-only ports. These services are intentionally bound to localhost.
   grafanaPort = 3000;
   promPort = 9090;
 
@@ -12,8 +11,7 @@ let
   cadvisorPort = config.services.cadvisor.port;
   processPort = config.services.prometheus.exporters.process.port;
 
-  # Build the default Grafana dashboard declaratively so the full monitoring
-  # layout stays versioned in Nix instead of being edited manually in the UI.
+  # Generated Grafana dashboard kept in Nix so it stays versioned and reproducible.
   overviewDashboard = pkgs.writeText "system-overview.json" (builtins.toJSON {
     uid = "system-overview";
     title = "System Overview";
@@ -27,7 +25,7 @@ let
     panels = [
       {
         type = "stat"; title = "CPU Usage";
-        id = 1; gridPos = { x = 0;  y = 0; w = 4; h = 4; };
+        id = 1; gridPos = { x = 0; y = 0; w = 4; h = 4; };
         fieldConfig.defaults = { unit = "percentunit"; min = 0; max = 1;
           thresholds.mode = "absolute"; thresholds.steps = [
             { color = "green"; value = null; } { color = "yellow"; value = 0.6; } { color = "red"; value = 0.85; } ]; };
@@ -35,7 +33,7 @@ let
       }
       {
         type = "stat"; title = "Memory Usage";
-        id = 2; gridPos = { x = 4;  y = 0; w = 4; h = 4; };
+        id = 2; gridPos = { x = 4; y = 0; w = 4; h = 4; };
         fieldConfig.defaults = { unit = "percentunit"; min = 0; max = 1;
           thresholds.mode = "absolute"; thresholds.steps = [
             { color = "green"; value = null; } { color = "yellow"; value = 0.7; } { color = "red"; value = 0.9; } ]; };
@@ -43,7 +41,7 @@ let
       }
       {
         type = "stat"; title = "GPU Usage";
-        id = 3; gridPos = { x = 8;  y = 0; w = 4; h = 4; };
+        id = 3; gridPos = { x = 8; y = 0; w = 4; h = 4; };
         fieldConfig.defaults = { unit = "percentunit"; min = 0; max = 1;
           thresholds.mode = "absolute"; thresholds.steps = [
             { color = "green"; value = null; } { color = "yellow"; value = 0.6; } { color = "red"; value = 0.85; } ]; };
@@ -89,7 +87,6 @@ let
         targets = [ { refId = "A";
           expr = "(sum(rate(node_rapl_package_joules_total[30s])) + sum(nvidia_smi_power_draw_watts) + 74) * 1.14"; } ];
       }
-
       {
         type = "timeseries"; title = "CPU per-core";
         id = 10; gridPos = { x = 0; y = 8; w = 12; h = 7; };
@@ -112,7 +109,7 @@ let
         id = 12; gridPos = { x = 0; y = 15; w = 12; h = 7; };
         fieldConfig.defaults.unit = "percentunit";
         targets = [
-          { refId = "A"; expr = "nvidia_smi_utilization_gpu_ratio";    legendFormat = "GPU util"; }
+          { refId = "A"; expr = "nvidia_smi_utilization_gpu_ratio"; legendFormat = "GPU util"; }
           { refId = "B"; expr = "nvidia_smi_utilization_memory_ratio"; legendFormat = "VRAM util"; }
         ];
       }
@@ -131,7 +128,7 @@ let
         id = 14; gridPos = { x = 0; y = 22; w = 12; h = 7; };
         fieldConfig.defaults.unit = "Bps";
         targets = [
-          { refId = "A"; expr = ''rate(node_disk_read_bytes_total{device!~"loop.*|dm-.*"}[30s])'';    legendFormat = "{{device}} read"; }
+          { refId = "A"; expr = ''rate(node_disk_read_bytes_total{device!~"loop.*|dm-.*"}[30s])''; legendFormat = "{{device}} read"; }
           { refId = "B"; expr = ''rate(node_disk_written_bytes_total{device!~"loop.*|dm-.*"}[30s])''; legendFormat = "{{device}} write"; }
         ];
       }
@@ -172,7 +169,7 @@ let
         id = 24; gridPos = { x = 0; y = 40; w = 24; h = 7; };
         fieldConfig.defaults.unit = "Bps";
         targets = [
-          { refId = "A"; expr = ''sum by (friendly_name) (rate(container_fs_reads_bytes_total{name!=""}[1m]) * on(name) group_left(friendly_name) docker_container_info)'';    legendFormat = "{{friendly_name}} read"; }
+          { refId = "A"; expr = ''sum by (friendly_name) (rate(container_fs_reads_bytes_total{name!=""}[1m]) * on(name) group_left(friendly_name) docker_container_info)''; legendFormat = "{{friendly_name}} read"; }
           { refId = "B"; expr = ''sum by (friendly_name) (rate(container_fs_writes_bytes_total{name!=""}[1m]) * on(name) group_left(friendly_name) docker_container_info)''; legendFormat = "{{friendly_name}} write"; }
         ];
       }
@@ -181,7 +178,7 @@ let
         id = 15; gridPos = { x = 12; y = 22; w = 12; h = 7; };
         fieldConfig.defaults.unit = "Bps";
         targets = [
-          { refId = "A"; expr = ''rate(node_network_receive_bytes_total{device!~"lo|veth.*|docker.*|br-.*|virbr.*"}[30s])'';  legendFormat = "{{device}} rx"; }
+          { refId = "A"; expr = ''rate(node_network_receive_bytes_total{device!~"lo|veth.*|docker.*|br-.*|virbr.*"}[30s])''; legendFormat = "{{device}} rx"; }
           { refId = "B"; expr = ''rate(node_network_transmit_bytes_total{device!~"lo|veth.*|docker.*|br-.*|virbr.*"}[30s])''; legendFormat = "{{device}} tx"; }
         ];
       }
@@ -189,28 +186,27 @@ let
   });
 in
 {
-  # Grafana uses this secret to encrypt sensitive values stored in its DB.
+  # Grafana needs a persistent secret for values stored in its DB.
   age.secrets.grafana-secret-key = {
-    file = ../secrets/grafana-secret-key.age;
+    file = ../../../../secrets/grafana-secret-key.age;
     owner = "grafana";
     group = "grafana";
     mode = "0400";
   };
 
-  # Host sensor probing helpers used by the exporters and local troubleshooting.
+  # Sensor CLI for local troubleshooting.
   environment.systemPackages = with pkgs; [ lm_sensors ];
 
-  # Expose the AMD package energy counters so Prometheus can estimate CPU power.
+  # RAPL kernel interface used for CPU package power estimation.
   boot.kernelModules = [ "intel_rapl_common" ];
 
-  # Allow node_exporter (non-root) to read /sys/class/powercap/.../energy_uj
-  # which is owned root:root mode 0400 (Platypus mitigation).
+  # Let node_exporter read restricted powercap files without full root.
   systemd.services.prometheus-node-exporter.serviceConfig = {
     AmbientCapabilities = [ "CAP_DAC_READ_SEARCH" ];
     CapabilityBoundingSet = [ "CAP_DAC_READ_SEARCH" ];
   };
 
-  # Prometheus scrapes every local exporter and stores the resulting time-series.
+  # Prometheus scrapes local exporters and stores the resulting time series.
   services.prometheus = {
     enable = true;
     listenAddress = "127.0.0.1";
@@ -218,33 +214,33 @@ in
     globalConfig.scrape_interval = "15s";
 
     exporters = {
-      # Host metrics: CPU, memory, disks, temperatures, RAPL, textfile collector.
+      # Host metrics: CPU, memory, disks, hwmon, thermal zones, and textfile data.
       node = {
         enable = true;
         listenAddress = "127.0.0.1";
         enabledCollectors = [ "systemd" "processes" "hwmon" "thermal_zone" "rapl" "textfile" ];
         extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files" ];
       };
-      # NVIDIA metrics via nvidia-smi.
+      # NVIDIA GPU metrics via nvidia-smi.
       nvidia-gpu = {
         enable = true;
         listenAddress = "127.0.0.1";
       };
-      # SMART and drive health metrics.
+      # SMART/drive-health metrics.
       smartctl = {
         enable = true;
         listenAddress = "127.0.0.1";
       };
-      # Grouped per-process metrics so Grafana can show IDE/browser/build load.
+      # Grouped process metrics for browsers, IDEs, builds, Docker, etc.
       process = {
         enable = true;
         listenAddress = "127.0.0.1";
         settings.process_names = [
-          { name = "steam";      comm = [ "steam" "steamwebhelper" "gamescope" "wineserver" "wine64-preloader" "wine-preloader" "proton" ]; }
-          { name = "browser";    comm = [ "firefox" "librewolf" "chromium" "chrome" "brave" "google-chrome-stable" ]; }
-          { name = "ide";        comm = [ "code" "code-oss" "nvim" "vim" "emacs" "emacs-pgtk" "idea" "pycharm" "goland" "clion" "webstorm" ]; }
-          { name = "build";      comm = [ "cc1" "cc1plus" "g++" "gcc" "ld" "rustc" "cargo" "nix" "nix-build" "nix-instantiate" "nixos-rebuild" "go" "mvn" "gradle" ]; }
-          { name = "docker";     comm = [ "dockerd" "containerd" "containerd-shim-runc-v2" "docker-proxy" ]; }
+          { name = "steam"; comm = [ "steam" "steamwebhelper" "gamescope" "wineserver" "wine64-preloader" "wine-preloader" "proton" ]; }
+          { name = "browser"; comm = [ "firefox" "librewolf" "chromium" "chrome" "brave" "google-chrome-stable" ]; }
+          { name = "ide"; comm = [ "code" "code-oss" "nvim" "vim" "emacs" "emacs-pgtk" "idea" "pycharm" "goland" "clion" "webstorm" ]; }
+          { name = "build"; comm = [ "cc1" "cc1plus" "g++" "gcc" "ld" "rustc" "cargo" "nix" "nix-build" "nix-instantiate" "nixos-rebuild" "go" "mvn" "gradle" ]; }
+          { name = "docker"; comm = [ "dockerd" "containerd" "containerd-shim-runc-v2" "docker-proxy" ]; }
           { name = "monitoring"; comm = [ "grafana-server" "prometheus" "node_exporter" "nvidia_gpu_export" "cadvisor" "process-exporter" "smartctl_exporter" ]; }
           { name = "{{.Comm}}"; cmdline = [ ".+" ]; }
         ];
@@ -252,15 +248,15 @@ in
     };
 
     scrapeConfigs = [
-      { job_name = "node";        static_configs = [ { targets = [ "127.0.0.1:${toString nodePort}"      ]; } ]; }
-      { job_name = "nvidia_gpu";  static_configs = [ { targets = [ "127.0.0.1:${toString nvidiaPort}"    ]; } ]; }
-      { job_name = "smartctl";    static_configs = [ { targets = [ "127.0.0.1:${toString smartctlPort}"  ]; } ]; }
-      { job_name = "cadvisor";    static_configs = [ { targets = [ "127.0.0.1:${toString cadvisorPort}"  ]; } ]; }
-      { job_name = "process";     static_configs = [ { targets = [ "127.0.0.1:${toString processPort}"   ]; } ]; }
+      { job_name = "node"; static_configs = [ { targets = [ "127.0.0.1:${toString nodePort}" ]; } ]; }
+      { job_name = "nvidia_gpu"; static_configs = [ { targets = [ "127.0.0.1:${toString nvidiaPort}" ]; } ]; }
+      { job_name = "smartctl"; static_configs = [ { targets = [ "127.0.0.1:${toString smartctlPort}" ]; } ]; }
+      { job_name = "cadvisor"; static_configs = [ { targets = [ "127.0.0.1:${toString cadvisorPort}" ]; } ]; }
+      { job_name = "process"; static_configs = [ { targets = [ "127.0.0.1:${toString processPort}" ]; } ]; }
     ];
   };
 
-  # cAdvisor publishes container-level CPU, memory, and filesystem metrics.
+  # cAdvisor provides per-container resource metrics.
   services.cadvisor = {
     enable = true;
     listenAddress = "127.0.0.1";
@@ -273,8 +269,7 @@ in
     ];
   };
 
-  # Grafana stays localhost-only, uses anonymous local access, and loads the
-  # default dashboard plus Prometheus datasource declaratively.
+  # Grafana is local-only and provisioned declaratively.
   services.grafana = {
     enable = true;
     settings = {
@@ -292,8 +287,7 @@ in
       "auth".disable_login_form = true;
       security.secret_key = "$__file{${config.age.secrets.grafana-secret-key.path}}";
       users.default_theme = "dark";
-      dashboards.default_home_dashboard_path =
-        "/var/lib/grafana/dashboards/system-overview.json";
+      dashboards.default_home_dashboard_path = "/var/lib/grafana/dashboards/system-overview.json";
     };
 
     provision = {
@@ -313,18 +307,17 @@ in
     };
   };
 
-  # Ensure the dashboard directory and node_exporter textfile directory exist,
-  # then place the generated dashboard JSON where Grafana expects it.
+  # Create Grafana/dashboard/textfile directories and place the generated dashboard.
   systemd.tmpfiles.rules = [
     "d /var/lib/grafana/dashboards 0755 grafana grafana -"
     "L+ /var/lib/grafana/dashboards/system-overview.json - - - - ${overviewDashboard}"
     "d /var/lib/prometheus-node-exporter-text-files 0755 root root -"
   ];
 
-  # Publishes Docker container-id → friendly-name as a textfile collector
-  # metric, so Grafana panels can render short names instead of long hashes.
+  # Export Docker container-name metadata into node_exporter's textfile collector
+  # so Grafana panels can show friendly names instead of IDs.
   systemd.services.docker-container-info-exporter = {
-    description = "Write docker container id → name mapping as a node_exporter textfile";
+    description = "Write docker container id -> name mapping as a node_exporter textfile";
     after = [ "docker.service" ];
     requires = [ "docker.service" ];
     serviceConfig = {
@@ -348,7 +341,7 @@ in
     };
   };
 
-  # Refresh the container-name mapping periodically so Grafana labels stay current.
+  # Refresh the container metadata mapping on a timer.
   systemd.timers.docker-container-info-exporter = {
     wantedBy = [ "timers.target" ];
     timerConfig = {

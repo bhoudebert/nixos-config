@@ -3,6 +3,9 @@
 Date of investigation: 2026-04-18
 Status: fixed by reboot; root cause probable but unconfirmed; mitigation proposed.
 
+This note is intentionally detailed because it documents a hardware-specific
+failure mode and the exact evidence gathered while the issue was live.
+
 ## Symptom
 
 Intermittent loss of audio through the motherboard's rear-panel optical (TOSLINK) S/PDIF output. Chain is:
