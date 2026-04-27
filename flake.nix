@@ -13,15 +13,29 @@
     agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-flatpak, agenix, ... }@attrs: {
-    nixosConfigurations = {
-      # Main desktop/workstation configuration.
-      home =
-        let
-          # Single target architecture for this machine.
-          system = "x86_64-linux";
-        in
-        nixpkgs.lib.nixosSystem {
+  outputs = { self, nixpkgs, home-manager, nix-flatpak, agenix, ... }@attrs:
+    let
+      # Single target architecture for this machine.
+      system = "x86_64-linux";
+
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.overlays.default ];
+      };
+    in
+    {
+      overlays.default = final: _prev: {
+        helium = final.callPackage ./pkgs/helium.nix { };
+      };
+
+      packages.${system} = {
+        inherit (pkgs) helium;
+        default = pkgs.helium;
+      };
+
+      nixosConfigurations = {
+        # Main desktop/workstation configuration.
+        home = nixpkgs.lib.nixosSystem {
           inherit system;  # Change this if the target machine uses another architecture.
           # Make flake inputs available to downstream modules through specialArgs.
           specialArgs = attrs;
@@ -33,11 +47,12 @@
             # Age-encrypted secret management.
             agenix.nixosModules.default
             {
+              nixpkgs.overlays = [ self.overlays.default ];
               # Install the agenix CLI so secrets can be edited and rekeyed locally.
               environment.systemPackages = [ agenix.packages.${system}.default ];
             }
           ];
         };
+      };
     };
-  };
 }

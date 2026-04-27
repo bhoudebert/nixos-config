@@ -17,5 +17,12 @@
       # Default editor used by shells, git, and many CLI tools.
       EDITOR = "vim";
     };
+    home.file.".XCompose".text = ''
+      include "%L"
+
+      # Match the TTY habit from us-acentos in graphical apps too.
+      <dead_acute> <c> : "ç" ccedilla
+      <dead_acute> <C> : "Ç" Ccedilla
+    '';
   };
 }

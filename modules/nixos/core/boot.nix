@@ -7,6 +7,11 @@
   # Force DRM modesetting early for NVIDIA so Wayland and graphics init behave.
   boot.kernelParams = [
     "nvidia-drm.modeset=1"
+    # Keep fbdev/DRM ownership stable across suspend-resume on Wayland.
+    "nvidia-drm.fbdev=1"
+    # Preserve VRAM state and let the kernel coordinate NVIDIA resume hooks.
+    "nvidia.NVreg_UseKernelSuspendNotifiers=1"
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
   ];
 
   # EFI boot via systemd-boot.
