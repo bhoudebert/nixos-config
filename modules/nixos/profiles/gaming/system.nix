@@ -84,6 +84,9 @@ in
       pkgs."libxcb-wm".dev
     ];
 
+  # 32-bit graphics userspace is required for Steam, Proton, and legacy games.
+  hardware.graphics.enable32Bit = true;
+
   # NVIDIA-oriented runtime defaults for desktop gaming sessions.
   environment.sessionVariables = {
     GBM_BACKEND = "nvidia-drm";

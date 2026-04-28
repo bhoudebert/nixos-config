@@ -33,26 +33,32 @@
         default = pkgs.helium;
       };
 
-      nixosConfigurations = {
-        # Main desktop/workstation configuration.
-        home = nixpkgs.lib.nixosSystem {
-          inherit system;  # Change this if the target machine uses another architecture.
-          # Make flake inputs available to downstream modules through specialArgs.
-          specialArgs = attrs;
-          # Compose the system from the base config plus extra modules.
-          modules = [
-            ./hosts/home/default.nix  # Main machine configuration.
-            # Declarative Flatpak support.
-            nix-flatpak.nixosModules.nix-flatpak
-            # Age-encrypted secret management.
-            agenix.nixosModules.default
-            {
-              nixpkgs.overlays = [ self.overlays.default ];
-              # Install the agenix CLI so secrets can be edited and rekeyed locally.
-              environment.systemPackages = [ agenix.packages.${system}.default ];
-            }
-          ];
+      nixosConfigurations =
+        let
+          mkHost = hostModule: nixpkgs.lib.nixosSystem {
+            inherit system;  # Change this if the target machine uses another architecture.
+            # Make flake inputs available to downstream modules through specialArgs.
+            specialArgs = attrs;
+            # Compose the system from the host root plus shared flake-level modules.
+            modules = [
+              hostModule
+              # Declarative Flatpak support.
+              nix-flatpak.nixosModules.nix-flatpak
+              # Age-encrypted secret management.
+              agenix.nixosModules.default
+              {
+                nixpkgs.overlays = [ self.overlays.default ];
+                # Install the agenix CLI so secrets can be edited and rekeyed locally.
+                environment.systemPackages = [ agenix.packages.${system}.default ];
+              }
+            ];
+          };
+        in
+        {
+          # Main desktop/workstation configuration.
+          home = mkHost ./hosts/home/default.nix;
+          # Secondary laptop target sharing the same repo.
+          framework13 = mkHost ./hosts/framework13/default.nix;
         };
-      };
     };
 }

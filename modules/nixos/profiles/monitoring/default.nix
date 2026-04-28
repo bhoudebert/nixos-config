@@ -6,6 +6,9 @@
   # Monitoring profile:
   # Prometheus, Grafana, exporters, and generated dashboards.
   imports = [
-    ./system.nix
+    ./core.nix
+    ./dashboard.nix
+    ./gpu.nix
+    ./docker.nix
   ];
 }

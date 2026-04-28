@@ -9,6 +9,7 @@
   imports = [
     # Hardware-specific filesystem, initrd, and platform declarations.
     ./hardware-configuration.nix
+    ./system.nix
     # Shared machine baseline: boot, locale, users, desktop defaults, etc.
     ../../modules/nixos/core
     # Feature branches enabled on this host.
