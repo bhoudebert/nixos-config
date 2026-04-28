@@ -4,30 +4,37 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  # Placeholder hardware profile copied from `home` until the laptop generates
-  # its own hardware-configuration.nix on first install.
   imports =
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "thunderbolt" "usbhid" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/443c603a-e4e4-45dd-b02b-0ee6e31cc7df";
+    { device = "/dev/disk/by-uuid/d0fe2a61-15af-4d47-a044-e80d66b9b560";
       fsType = "ext4";
     };
 
+  boot.initrd.luks.devices."luks-908c98cf-628c-4383-bc1d-05891eaec86a".device = "/dev/disk/by-uuid/908c98cf-628c-4383-bc1d-05891eaec86a";
+
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/6827-F003";
+    { device = "/dev/disk/by-uuid/17A5-E0F5";
       fsType = "vfat";
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
   swapDevices = [ ];
 
+  # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+  # (the default) this is the recommended approach. When using systemd-networkd it's
+  # still possible to use this option, but it's recommended to use it in conjunction
+  # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+  networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp166s0.useDHCP = lib.mkDefault true;
+
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
