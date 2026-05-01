@@ -17,5 +17,6 @@
     ../../modules/nixos/profiles/gaming
     ../../modules/nixos/profiles/desktop/hyprland
     ../../modules/nixos/profiles/monitoring
+    ../../modules/nixos/profiles/cloud
   ];
 }

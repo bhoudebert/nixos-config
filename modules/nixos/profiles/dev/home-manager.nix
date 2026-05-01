@@ -73,7 +73,7 @@
           "ipfs"
           "isodate"
           "jump"
-          "ripgrep"
+          # "ripgrep"
           "rsync"
           "rust"
           "sudo"

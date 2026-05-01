@@ -10,6 +10,7 @@ Git history may be rewritten occasionally because this is a personal machine rep
 - [dev.md](./dev.md) - development stack, IDEs, local infra, and shell tooling
 - [gaming.md](./gaming.md) - gaming stack, benchmark tools, and when to use them
 - [monitoring.md](./monitoring.md) - monitoring stack and dashboard/exporter notes
+- [npm-global-tools.md](./npm-global-tools.md) - npm global CLI setup on NixOS and why `~/.local` is used
 - [secrets.md](./secrets.md) - agenix workflow, encrypted secrets, and how to consume them
 - [issues.md](./issues.md) - issue log and workarounds
 - [sound-issue.md](./sound-issue.md) - sound troubleshooting notes
@@ -70,8 +71,14 @@ nix --extra-experimental-features 'nix-command flakes' build \
   --no-link
 ```
 
+## Windows
 
-## Other Hosts
+A useful command, that you would need to adapt, to get your windows disk available:
 
-`framework` is mentioned here as a future/secondary host target, but it is not
-currently defined in this tree.
+```shell
+sudo mkdir -p /mnt/windows && sudo mount -t ntfs3 -o ro,force,uid=$(id -u),gid=$(id -g) /dev/sda3 /mnt/windows && ls /mnt/windows
+```
+
+## Extra
+
+At the moment there is a little try for me on helium, so it is packaged from directly github and can be used through the following command: `nix run .#helium`

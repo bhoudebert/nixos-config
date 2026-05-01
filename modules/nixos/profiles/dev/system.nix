@@ -86,7 +86,11 @@ in
       bubblewrap
       nmap
       proton-vpn
-      onedrive
+      # language
+      languagetool
+      hunspell
+      hunspellDicts.en_US-large
+      hunspellDicts.fr-any
     ];
   };
 

@@ -26,6 +26,10 @@
         discord
         spotify
         slack
+        # Video
+        vlc
+        # Terminal
+        kdePackages.yakuake
       ];
   };
 }
