@@ -8,8 +8,9 @@
   imports = [
     ./hardware-configuration.nix
     ./system.nix
+    ./fingerprint.nix
     ../../modules/nixos/core
     ../../modules/nixos/profiles/dev
-    ../../modules/nixos/profiles/monitoring
+  #  ../../modules/nixos/profiles/monitoring
   ];
 }
