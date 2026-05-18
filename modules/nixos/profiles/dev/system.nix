@@ -91,6 +91,8 @@ in
       hunspell
       hunspellDicts.en_US-large
       hunspellDicts.fr-any
+      # AI
+      rtk
     ];
   };
 

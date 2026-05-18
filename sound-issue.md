@@ -1,10 +1,57 @@
 # S/PDIF silent-output issue — NixOS
 
 Date of investigation: 2026-04-18
-Status: fixed by reboot; root cause probable but unconfirmed; mitigation proposed.
+Status: recurring; latest recurrence on 2026-05-14 was improved by restarting
+`pipewire-pulse` after reasserting the S/PDIF route.
 
 This note is intentionally detailed because it documents a hardware-specific
 failure mode and the exact evidence gathered while the issue was live.
+
+## Recurrence on 2026-05-14
+
+The issue recurred while watching YouTube Shorts in Firefox.
+
+Evidence captured before intervention:
+
+- PipeWire, WirePlumber, and `pipewire-pulse` were all running.
+- Default sink was already `USB Audio S/PDIF Output`, volume 1.00.
+- ALSA card mapping still had the onboard USB audio chip as card `Audio`
+  / card 5.
+- `PCM Playback Switch` `numid=22` (`index=2`, S/PDIF) was already `on`, so
+  the earlier mixer-mute hypothesis was not confirmed this time.
+- `/proc/asound/card5/pcm3p/sub0/status` and `hw_params` both reported
+  `closed`, meaning the S/PDIF PCM was not being fed at that moment.
+- Firefox had a PipeWire Pulse stream for a YouTube video, but it was
+  `pulse.corked = "true"` and linked ports were in `init`.
+
+Intervention:
+
+```bash
+wpctl set-default 59
+wpctl set-mute 59 0
+wpctl set-volume 59 1.0
+nix-shell -p alsa-utils --run "amixer -c 5 cset numid=22 on"
+systemctl --user restart pipewire-pulse
+```
+
+After restarting only `pipewire-pulse`, the stuck Firefox stream disappeared,
+the S/PDIF sink stayed selected, and a local `pw-play` test sample completed
+successfully. A `fix-audio` command is now provided by the NixOS audio module
+to repeat this recovery path.
+
+Follow-up after user reported continued silence:
+
+- Spotify was active, uncorked, and linked to the S/PDIF sink.
+- `/proc/asound/card5/pcm3p/sub0/status` reported `RUNNING`, with `hw_ptr` and
+  `appl_ptr` advancing.
+- `hw_params` showed `S16_LE`, stereo, 48000 Hz.
+- `snd_usb_audio` was successfully unloaded and reloaded after stopping
+  PipeWire/WirePlumber; PipeWire came back cleanly, but S/PDIF was still silent.
+
+This rules out Firefox, `pipewire-pulse`, normal WirePlumber routing, and the
+kernel module's ordinary reload path for this recurrence. The most likely
+remaining recovery is a full power removal of the onboard USB audio codec and
+Yamaha S/PDIF receiver path.
 
 ## Symptom
 

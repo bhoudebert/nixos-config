@@ -186,3 +186,17 @@ What to watch:
 If `nvidia-smi` shows the benchmark process and the GPU load climbs, the
 benchmark is using the RTX 5080 even if UNIGINE displays the AMD iGPU
 name in its UI.
+
+### Check drivers
+
+Currently
+
+```shell
+nvidia-smi --query-gpu=driver_version,name --format=csv,noheader
+```
+
+Available
+
+```shell
+nix eval --raw .#nixosConfigurations.$(hostname).config.hardware.nvidia.package.version
+```
