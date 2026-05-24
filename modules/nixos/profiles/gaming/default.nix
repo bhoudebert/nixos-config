@@ -8,5 +8,6 @@
   imports = [
     ./home-manager.nix
     ./system.nix
+    ./heroic.nix
   ];
 }
