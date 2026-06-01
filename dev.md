@@ -58,6 +58,39 @@ This module enables:
 That covers both local container workflows and desktop virtual machine
 work.
 
+#### Troubleshooting: VM will not start
+
+Symptom: starting the `ubuntu24.04` guest fails with
+
+```text
+error: Failed to start domain 'ubuntu24.04'
+error: Requested operation is not valid: network 'default' is not active
+```
+
+Cause: the guest is attached to the libvirt `default` NAT network. If that
+network is inactive (and not set to autostart), `libvirtd` comes up after a
+reboot but never brings the network up, so the VM refuses to start.
+
+Check the network state:
+
+```bash
+virsh -c qemu:///system net-list --all
+```
+
+Fix — start the network now and make it come up automatically on every boot:
+
+```bash
+virsh -c qemu:///system net-start default
+virsh -c qemu:///system net-autostart default
+virsh -c qemu:///system start ubuntu24.04
+```
+
+Note: membership in the `libvirtd` group (granted by this profile) lets you
+run these `qemu:///system` commands without `sudo`. The `net-autostart`
+flag is imperative libvirt state (a symlink under
+`/var/lib/libvirt/network/autostart/`), not part of the Nix config, so it
+survives reboots but must be re-applied if the machine is reinstalled.
+
 ### VPN Proxy Bridge
 
 For company VPN access through the Ubuntu VM, the dev profile also enables

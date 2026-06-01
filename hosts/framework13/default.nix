@@ -9,6 +9,7 @@
     ./hardware-configuration.nix
     ./system.nix
     ./fingerprint.nix
+    ./bluetooth.nix
     ../../modules/nixos/core
     ../../modules/nixos/profiles/dev
   #  ../../modules/nixos/profiles/monitoring
