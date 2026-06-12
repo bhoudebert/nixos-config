@@ -123,6 +123,24 @@ sudo nixos-rebuild switch --flake .#home
 Use this when the secret content changes but the allowed recipients stay
 the same.
 
+## Change Who Can Decrypt Secrets
+
+The top-level `secrets.nix` file is the `agenix` rules file. It says which
+public SSH keys are allowed to decrypt each encrypted `.age` file.
+
+If you add or remove a key in `secrets.nix`, rekey the existing encrypted
+files from the repo root:
+
+```bash
+agenix -r -i /home/bhoudebert/.ssh/id_ed25519
+```
+
+This does not change the plaintext secret values. It only rewrites the
+encrypted `.age` files so their recipient lists match `secrets.nix`.
+
+Commit both the `secrets.nix` change and the rewritten files under
+`secrets/*.age`.
+
 ## Read A Secret Manually
 
 For debugging only:

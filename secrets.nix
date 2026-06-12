@@ -5,13 +5,13 @@ let
 in
 {
   "secrets/grafana-secret-key.age" = {
-    publicKeys = [ home ];
+    publicKeys = [ home framework ];
     # Keep the file in ASCII-armored form so it stays readable in git diffs.
     armor = true;
   };
 
   "secrets/dev-private-hosts.age" = {
-    publicKeys = [ home ];
+    publicKeys = [ home framework ];
     # Host aliases are still private client/work data, so store them encrypted
     # if they need to live in the public repo.
     armor = true;
