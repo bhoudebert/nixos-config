@@ -82,3 +82,12 @@ sudo mkdir -p /mnt/windows && sudo mount -t ntfs3 -o ro,force,uid=$(id -u),gid=$
 ## Extra
 
 At the moment there is a little try for me on helium, so it is packaged from directly github and can be used through the following command: `nix run .#helium`
+
+## Cleaning
+
+It is very important to clean from time to time your nix installation especially if you bump a lot the deps using `nix flake update`. If you could earn gigabytes, but be aware that it will delete old generation of system.
+
+```shell
+sudo nix-collect-garbage -d
+nix-store --optimise
+```

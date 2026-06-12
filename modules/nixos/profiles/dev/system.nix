@@ -71,7 +71,7 @@ in
       docker
       docker-compose
       # Language/runtime/tooling baseline.
-      nodejs_25
+      nodejs
       python3
       pandoc
       go-grip

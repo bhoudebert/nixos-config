@@ -13,5 +13,10 @@
     # Core editor and socket/process inspection.
     vim
     lsof
+    # Disk stats
+    qdirstat
+    baobab
+    nix-du
+    nix-tree
   ];
 }

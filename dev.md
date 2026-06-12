@@ -224,7 +224,7 @@ development toolchain, not because the base OS needs them.
 
 ### Runtime / App Tooling
 
-- `nodejs_25` - Node runtime for JavaScript and frontend tooling
+- `nodejs` - Node runtime for JavaScript and frontend tooling
 - `dbeaver-bin` - database GUI
 - `postman` - API testing GUI
 
