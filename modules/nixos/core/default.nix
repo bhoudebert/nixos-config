@@ -13,6 +13,7 @@
     ./home-manager.nix
     ./input.nix
     ./locale.nix
+    ./memory.nix
     ./networking.nix
     ./nix.nix
     ./packages.nix

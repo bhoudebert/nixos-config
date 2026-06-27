@@ -11,8 +11,7 @@
     "nvidia-drm.modeset=1"
     # Keep fbdev/DRM ownership stable across suspend-resume on Wayland.
     "nvidia-drm.fbdev=1"
-    # Preserve VRAM state and let the kernel coordinate NVIDIA resume hooks.
-    "nvidia.NVreg_UseKernelSuspendNotifiers=1"
+    # Preserve VRAM state across suspend-resume.
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
   ];
 
@@ -25,6 +24,9 @@
     # Standard power-management toggles for this desktop GPU setup.
     powerManagement.enable = true;
     powerManagement.finegrained = false;
+    # The 595/open-module kernel notifier path is newer and this machine shows
+    # post-resume display hotplug churn, so keep the explicit NVIDIA sleep hooks.
+    powerManagement.kernelSuspendNotifier = false;
     # Prefer the open kernel module variant when available/stable.
     open = true;
     # Installs the NVIDIA control panel utility.
