@@ -20,6 +20,21 @@
     config.common.default = "kde";
   };
 
+  # SMB client integration for Dolphin/KIO plus CLI tools for diagnostics and
+  # optional CIFS mounts.
+  environment.systemPackages = with pkgs; [
+    cifs-utils
+    samba
+    kdePackages.kio-extras
+    kdePackages.kio-fuse
+  ];
+
+  environment.etc."samba/smb.conf".text = ''
+    [global]
+      client min protocol = SMB2
+      client max protocol = SMB3
+  '';
+
   # Declarative Flatpak setup for a small set of GUI apps kept outside nixpkgs.
   services.flatpak = {
     enable = true;

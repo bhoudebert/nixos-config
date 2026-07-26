@@ -10,6 +10,7 @@
       "bringg-adapter"
       "bringg-mock"
       "tdi-mock"
+      "pg-dms-by-adeo-fras-d-dms.i.aivencloud.com"
     ];
   };
 }
