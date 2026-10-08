@@ -30,6 +30,8 @@
         vlc
         # Terminal
         kdePackages.yakuake
+        # Docs
+        libreoffice
       ];
   };
 }

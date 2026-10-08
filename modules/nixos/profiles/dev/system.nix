@@ -54,7 +54,9 @@ in
       fd
       # Source control and basic transfer tools.
       git
+      gh
       wget
+      jq
       # Automatic shell environments for Nix-based projects.
       direnv
       nix-direnv
