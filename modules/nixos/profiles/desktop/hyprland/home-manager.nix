@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  # Reuse a packaged wallpaper rather than managing a local asset.
+  # Video wallpapers are local, unversioned files configured by the user.
   wallpaper = "${pkgs.nixos-artwork.wallpapers.simple-dark-gray.gnomeFilePath}";
 in
 {

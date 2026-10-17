@@ -26,6 +26,8 @@
     {
       overlays.default = final: _prev: {
         helium = final.callPackage ./pkgs/helium.nix { };
+        plasma-smart-video-wallpaper-reborn =
+          final.kdePackages.callPackage ./pkgs/plasma-smart-video-wallpaper-reborn.nix { };
       };
 
       packages.${system} = {

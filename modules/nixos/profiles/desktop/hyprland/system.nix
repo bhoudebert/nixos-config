@@ -5,6 +5,7 @@ let
   hyprlandPackages = with pkgs; [
     hyprland
     hyprpaper
+    mpvpaper
     hyprlock
     hypridle
     waybar

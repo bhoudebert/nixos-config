@@ -22,6 +22,13 @@ in
   home-manager.users.bhoudebert = {
     home.packages = [
       g9HdrReset
+      pkgs.ffmpeg
+      pkgs.plasma-smart-video-wallpaper-reborn
     ];
+
+    systemd.user.sessionVariables = {
+      QT_MEDIA_BACKEND = "ffmpeg";
+      QT_FFMPEG_DECODING_HW_DEVICE_TYPES = "cuda";
+    };
   };
 }

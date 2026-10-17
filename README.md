@@ -14,6 +14,7 @@ Git history may be rewritten occasionally because this is a personal machine rep
 - [secrets.md](./secrets.md) - agenix workflow, encrypted secrets, and how to consume them
 - [issues.md](./issues.md) - issue log and workarounds
 - [sound-issue.md](./sound-issue.md) - sound troubleshooting notes
+- [wallpapers.md](./wallpapers.md) - local animated wallpapers for Plasma and Hyprland
 
 ## Encrypted Data
 
