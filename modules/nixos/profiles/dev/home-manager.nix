@@ -44,6 +44,11 @@
       };
     };
 
+    programs.mise = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     # Interactive shell experience for day-to-day development work.
     programs.zsh = {
       enable = true;
@@ -94,5 +99,6 @@
         export PATH="$HOME/.local/bin:$PATH"
       '';
     };
+
   };
 }
