@@ -6,6 +6,7 @@
 {
   services.ollama = {
     enable = true;
+    host = "0.0.0.0";
     package = pkgs.ollama-cuda;                                  # use the RTX 5080
     environmentVariables.OLLAMA_CONTEXT_LENGTH = "65536";
     environmentVariables.OLLAMA_FLASH_ATTENTION = "1";
