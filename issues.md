@@ -3,6 +3,54 @@
 This file is a short incident log: what broke, what evidence was collected,
 what workaround was confirmed, and what to revisit later.
 
+## Stuck Firefox extension notification
+
+Date observed: 2026-10-28
+Status: workaround confirmed.
+
+## Symptom
+
+A Proton VPN notification triggered by the Firefox extension remained visible
+on the desktop. It stayed visible after Firefox was closed, so it was not a
+Firefox extension popup or a normal Firefox window.
+
+## Evidence collected
+
+The desktop notification D-Bus owner was checked with:
+
+```bash
+busctl --user status org.freedesktop.Notifications
+```
+
+It reported `.mako-wrapped` running as `mako.service`. Running
+`makoctl dismiss --all` did not remove the stuck notification, and restarting
+`plasma-plasmashell.service` was unrelated because Plasma did not own the
+notification surface.
+
+## Resolution used
+
+Restart Mako, the notification daemon:
+
+```bash
+systemctl --user restart mako.service
+```
+
+Optionally verify that it restarted successfully:
+
+```bash
+systemctl --user is-active mako.service
+```
+
+The expected result is `active`.
+
+## Notes
+
+- Restarting Mako clears the currently displayed notification surfaces.
+- Do not close Firefox or use a KWin window-closing script for this symptom;
+  the stuck notification is independent of the browser window.
+- `makoctl dismiss --all` is worth trying first for ordinary notifications,
+  but restarting `mako.service` was required for this stuck one.
+
 ## Desktop memory pressure and screenshot instability
 
 Date observed: 2026-06-16
