@@ -43,59 +43,8 @@ in
       "kvm"
     ];
 
-    packages = with pkgs; [
-      # Editors and desktop development tools.
-      kdePackages.kate
-      eza
-      emacs-pgtk
-      vscode
-      # Fast codebase navigation.
-      ripgrep
-      fd
-      # Source control and basic transfer tools.
-      git
-      gh
-      wget
-      jq
-      # Automatic shell environments for Nix-based projects.
-      direnv
-      nix-direnv
-      # Misc CLI helpers.
-      killall
-      dutree
-      # Nix docs, search, formatting, and LSPs.
-      manix
-      nix-index
-      nixfmt
-      nil
-      nixd
-      # Container tooling.
-      docker
-      docker-compose
-      # Language/runtime/tooling baseline.
-      nodejs
-      python3
-      pandoc
-      go-grip
-      github-copilot-cli
-      maven
-      # GUI tooling for databases, IDEs, and API testing.
-      dbeaver-bin
-      jetbrains-toolbox
-      postman
-      # Utility packages mostly used during development.
-      unzip
-      bubblewrap
-      nmap
-      proton-vpn
-      # language
-      languagetool
-      hunspell
-      hunspellDicts.en_US-large
-      hunspellDicts.fr-any
-      # AI
-      rtk
-    ];
+    # Shared with the standalone Home Manager MacBook setup.
+    packages = import ./packages.nix { inherit pkgs lib; };
   };
 
   # System-level tools needed outside the user profile too.
