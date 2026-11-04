@@ -37,9 +37,6 @@ builtins.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) (
     nixfmt
     nil
     nixd
-    # Container tooling.
-    docker
-    docker-compose
     # Language/runtime/tooling baseline.
     nodejs
     python3
@@ -64,5 +61,11 @@ builtins.filter (lib.meta.availableOn pkgs.stdenv.hostPlatform) (
     hunspellDicts.fr-any
     # AI
     rtk
+  ]
+  # Container tooling. On macOS OrbStack ships docker/compose/buildx matched
+  # to its engine (see hosts/macbook-pro), so the Nix CLIs would collide.
+  ++ lib.optionals (!isDarwin) [
+    docker
+    docker-compose
   ]
 )
