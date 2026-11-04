@@ -24,7 +24,47 @@ in
       orbstack
       # Powerline glyphs for the agnoster zsh theme; select it in the terminal.
       nerd-fonts.jetbrains-mono
+      # Terminal UI for Docker (talks to OrbStack's engine).
+      lazydocker
+      # Git-friendly API client (collections stored as plain files).
+      bruno
+      # CPU/GPU/RAM/network in the menu bar.
+      stats
+      # Friendlier HTTP client (`xh get httpbin.org/json`).
+      xh
     ]);
+
+  # Terminal UI for git.
+  programs.lazygit.enable = true;
+
+  # `cat` with syntax highlighting; used by delta for themes.
+  programs.bat.enable = true;
+
+  # Syntax-highlighted git diffs/pager.
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true; # n/N to jump between files
+      line-numbers = true;
+    };
+  };
+
+  # Fuzzy finder: Ctrl+T (files), Alt+C (cd). Ctrl+R is left to atuin below.
+  programs.fzf.enable = true;
+
+  # Searchable shell history in SQLite, bound to Ctrl+R / Up arrow. Local
+  # only; enable sync with `atuin register`/`atuin login` if ever wanted.
+  programs.atuin = {
+    enable = true;
+    settings = {
+      auto_sync = false;
+      update_check = false;
+    };
+  };
+
+  # Resource monitor.
+  programs.btop.enable = true;
 
   # Node/npm come from Nix, so the default global prefix is the read-only store.
   # Same fix as NixOS (see npm-global-tools.md): install globals under ~/.local

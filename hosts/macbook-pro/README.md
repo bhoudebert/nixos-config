@@ -40,6 +40,21 @@ Same fix as NixOS (`npm-global-tools.md`): `~/.npmrc` is managed here with
 `prefix=${HOME}/.local`, so `npm install -g` writes to `~/.local` instead of
 the read-only Nix store.
 
+## CLI and GUI extras (Mac only for now)
+
+| Tool | Use |
+| --- | --- |
+| `lazygit` / `lazydocker` | terminal UIs for git and Docker (OrbStack) |
+| `delta` | git pager for diff/log/show/blame (line numbers, `n`/`N` between files) |
+| `bat` | `cat` with syntax highlighting |
+| `fzf` | Ctrl+T files, Alt+C cd |
+| `atuin` | Ctrl+R / Up history search; local only (`auto_sync = false`) |
+| `btop`, `xh` | resource monitor, HTTP client |
+| Bruno, Stats | API client, menu-bar system monitor |
+
+These are cross-platform; move them to `modules/nixos/profiles/dev/` to share
+them with NixOS.
+
 ## Terminal font
 
 The agnoster zsh theme needs Powerline glyphs. `nerd-fonts.jetbrains-mono` is
