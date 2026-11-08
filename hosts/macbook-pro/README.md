@@ -20,6 +20,13 @@ switched with `home-manager switch --flake .#macbook-pro`. Adjust the username
 and home directory in `flake.nix` if they differ. It has not been evaluated
 from the Linux machine this was written on; run the build on the Mac first.
 
+When importing the module into an external Home Manager configuration, that
+configuration needs a recent Home Manager (the shared dev module uses
+`programs.git.settings` and `programs.zsh.initContent`). The flake output uses
+the Home Manager and nixpkgs versions pinned in this repo's `flake.lock`; an
+external configuration uses its own. The module installs only free packages, so
+no `nixpkgs.config.allowUnfree` is needed in either case.
+
 Note that the module hardwires the dev profile's Git identity
 (`bhoudebert <bhoudebert@gmail.com>`), which overrides any `programs.git`
 identity in the existing configuration. If Home Manager reports that a file
@@ -33,5 +40,5 @@ system or Android modules. The shared Zsh setup runs `direnv` and invokes
 Mac.
 
 The NixOS OneDrive module uses NixOS service options, and the `onedrive`
-package is unavailable for Apple Silicon in the pinned nixpkgs. It is not
+package may not be available for Apple Silicon (not verified here). It is not
 enabled here; choose a macOS-compatible sync client separately.
