@@ -7,7 +7,7 @@ The split is:
 
 - `modules/nixos/core/` for machine-wide boot/desktop/user defaults
 - `modules/nixos/profiles/dev/system.nix` for services and system packages
-- `modules/nixos/profiles/dev/home-manager.nix` for user shell/git config
+- `modules/nixos/profiles/dev/user.nix` for user shell/git config (plain Home Manager module, also reused by `hosts/macbook-pro`), wired into NixOS by `modules/nixos/profiles/dev/home-manager.nix`
 
 ## What Lives Here
 

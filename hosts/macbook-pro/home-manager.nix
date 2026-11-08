@@ -1,12 +1,8 @@
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 
-let
-  # This repository's dev leaf is a NixOS module whose user settings are
-  # nested under home-manager.users. Select those settings for standalone HM.
-  dev = import ../../modules/nixos/profiles/dev/home-manager.nix { };
-in
 {
-  imports = [ dev.home-manager.users.bhoudebert ];
+  # Shared dev profile user settings (git, mise, zsh) as a plain Home Manager module.
+  imports = [ ../../modules/nixos/profiles/dev/user.nix ];
 
   home.sessionVariables.EDITOR = "vim";
 
@@ -26,7 +22,4 @@ in
     ripgrep
     wget
   ];
-
-  # The shared Linux alias still refers to the former name of eza.
-  programs.zsh.shellAliases.ll = lib.mkForce "eza -al";
 }

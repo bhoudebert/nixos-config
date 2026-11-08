@@ -15,6 +15,7 @@ Git history may be rewritten occasionally because this is a personal machine rep
 - [issues.md](./issues.md) - issue log and workarounds
 - [sound-issue.md](./sound-issue.md) - sound troubleshooting notes
 - [wallpapers.md](./wallpapers.md) - local animated wallpapers for Plasma and Hyprland
+- [hosts/macbook-pro/README.md](./hosts/macbook-pro/README.md) - standalone Home Manager setup for a MacBook (macOS)
 
 ## Encrypted Data
 
@@ -57,6 +58,8 @@ sudo reboot
 The repo now follows a more dendritic NixOS layout:
 
 - `hosts/home/` contains the host entrypoint and host-specific hardware leaf
+- `hosts/framework13/` is the secondary laptop NixOS host
+- `hosts/macbook-pro/` is a standalone Home Manager module for macOS (not a NixOS host); it reuses `modules/nixos/profiles/dev/user.nix`
 - `modules/nixos/core/` contains the shared machine trunk: boot, locale, users, desktop baseline, secrets, and Home Manager glue
 - `modules/nixos/profiles/` contains feature branches such as `dev`, `gaming`, `monitoring`, and `desktop/hyprland`, each split into system and Home Manager leaves where useful
 

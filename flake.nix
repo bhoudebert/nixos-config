@@ -1,6 +1,7 @@
 {
   # Flake entrypoint for this machine repo.
-  # It pins upstream inputs and exposes one NixOS host named `home`.
+  # It pins upstream inputs and exposes NixOS hosts (`home`, `framework13`)
+  # plus a standalone Home Manager target for the MacBook (`macbook-pro`).
   description = "Home machine NixOS";
 
   inputs = {
@@ -33,6 +34,24 @@
       packages.${system} = {
         inherit (pkgs) helium;
         default = pkgs.helium;
+      };
+
+      # Standalone Home Manager target for the MacBook (Apple Silicon). It exists so
+      # the Mac module can be evaluated/built from this flake:
+      #   nix build .#homeConfigurations.macbook-pro.activationPackage
+      # Adjust username/homeDirectory if the Mac account differs.
+      homeConfigurations.macbook-pro = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+        modules = [
+          ./hosts/macbook-pro/home-manager.nix
+          {
+            home = {
+              username = "bhoudebert";
+              homeDirectory = "/Users/bhoudebert";
+              stateVersion = "25.11";
+            };
+          }
+        ];
       };
 
       nixosConfigurations =
