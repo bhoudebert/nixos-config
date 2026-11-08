@@ -8,6 +8,11 @@ the default npm global prefix can fall back to an immutable path under
 `/nix/store/...`. When that happens, `npm install -g ...` breaks or emits
 read-only filesystem warnings.
 
+This setup is NixOS-only. The standalone Home Manager module for the MacBook
+(`hosts/macbook-pro`) does not manage `~/.npmrc` or an npm prefix; it only
+installs `nodejs` and puts `~/.local/bin` on `PATH` through the shared Zsh
+config.
+
 ## Expected Layout
 
 Global npm installs should land here:
