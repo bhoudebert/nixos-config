@@ -89,8 +89,8 @@
       theme = "agnoster";
     };
     shellAliases = {
-      # Richer file listing (eza replaced the unmaintained exa).
-      ll = "eza -al";
+      # Richer file listing.
+      ll = "exa -al";
       # Shortcut for an external Claude runner.
       claude = "nix run github:ryoppippi/nix-claude-code";
     };
