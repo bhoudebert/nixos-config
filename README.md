@@ -75,6 +75,14 @@ nix --extra-experimental-features 'nix-command flakes' build \
   --no-link
 ```
 
+The same works for `framework13`. The MacBook target is evaluated on an
+Apple Silicon Mac (or a machine with an aarch64-darwin builder):
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' build \
+  '.#homeConfigurations.macbook-pro.activationPackage' --no-link
+```
+
 ## Windows
 
 A useful command, that you would need to adapt, to get your windows disk available:
