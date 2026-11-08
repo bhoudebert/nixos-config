@@ -1,0 +1,61 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # A second push to main must not cancel the run that would save the cache.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+jobs:
+  flake-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - run: nix flake check --no-build --print-build-logs
+  build:
+    name: build (${{ matrix.host }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [home, framework13]
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          docker-images: true
+          swap-storage: true
+          large-packages: false # apt purge is slow (minutes) for little gain
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: nix-community/cache-nix-action@v6
+        with:
+          primary-key: nix-${{ runner.os }}-${{ matrix.host }}-${{ hashFiles('flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-${{ matrix.host }}-
+          save: ${{ github.ref == 'refs/heads/main' }} # PR runs restore only
+          gc-max-store-size-linux: 3G
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-${{ matrix.host }}-
+          purge-created: 0
+          purge-primary-key: never
+      - run: >-
+          nix build --no-link --print-build-logs
+          '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
