@@ -56,6 +56,21 @@ jobs:
           purge-prefixes: nix-${{ runner.os }}-${{ matrix.host }}-
           purge-created: 0
           purge-primary-key: never
-      - run: >-
-          nix build --no-link --print-build-logs
-          '.#nixosConfigurations."${{ matrix.host }}".config.system.build.toplevel'
+      # The AI profile enables services.ollama with pkgs.ollama-cuda, which is
+      # not in cache.nixos.org (unfree CUDA build, hours on a free runner).
+      # CI builds the host without that service; everything else is unchanged.
+      - name: Build toplevel (without ollama)
+        env:
+          HOST: ${{ matrix.host }}
+        run: |
+          nix build --impure --no-link --print-build-logs --expr '
+            let
+              flake = builtins.getFlake (toString ./.);
+              host = flake.nixosConfigurations.${builtins.getEnv "HOST"};
+            in
+            (host.extendModules {
+              modules = [
+                ({ lib, ... }: { services.ollama.enable = lib.mkForce false; })
+              ];
+            }).config.system.build.toplevel
+          '
