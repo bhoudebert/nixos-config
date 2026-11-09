@@ -59,6 +59,9 @@ jobs:
       # The AI profile enables services.ollama with pkgs.ollama-cuda, which is
       # not in cache.nixos.org (unfree CUDA build, hours on a free runner).
       # CI builds the host without that service; everything else is unchanged.
+      # github-copilot-cli is fetched from a GitHub release URL that returns
+      # HTTP 504 from the runners (fixed-output download, no mirror), so CI
+      # swaps it for an empty stub. The package definition itself is not built.
       - name: Build toplevel (without ollama)
         env:
           HOST: ${{ matrix.host }}
@@ -70,7 +73,14 @@ jobs:
             in
             (host.extendModules {
               modules = [
-                ({ lib, ... }: { services.ollama.enable = lib.mkForce false; })
+                ({ lib, ... }: {
+                  services.ollama.enable = lib.mkForce false;
+                  nixpkgs.overlays = [
+                    (final: _prev: {
+                      github-copilot-cli = final.runCommand "github-copilot-cli-ci-stub" { } "mkdir -p $out/bin";
+                    })
+                  ];
+                })
               ];
             }).config.system.build.toplevel
           '
