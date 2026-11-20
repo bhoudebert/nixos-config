@@ -62,5 +62,19 @@
           # Secondary laptop target sharing the same repo.
           framework13 = mkHost ./hosts/framework13/default.nix;
         };
+
+      # Standalone Home Manager homes for non-NixOS machines.
+      homeConfigurations = {
+        # Ubuntu on WSL2 (Windows work machine), terminal-first dev setup.
+        # Apply with: home-manager switch --flake .#wsl
+        wsl = home-manager.lib.homeManagerConfiguration {
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+            overlays = [ self.overlays.default ];
+          };
+          modules = [ ./hosts/wsl/home-manager.nix ];
+        };
+      };
     };
 }
