@@ -52,6 +52,13 @@ sudo nixos-rebuild boot --flake .#home
 sudo reboot
 ```
 
+### WSL (Home Manager only)
+
+The Windows work machine runs Ubuntu on WSL2 with Nix and standalone Home
+Manager, not NixOS. See [hosts/wsl/README.md](./hosts/wsl/README.md).
+
+`home-manager switch --flake .#wsl`
+
 ## Layout
 
 The repo now follows a more dendritic NixOS layout:
@@ -75,12 +82,13 @@ nix --extra-experimental-features 'nix-command flakes' build \
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`) runs on pull requests and on pushes
-to `main`, with three independent checks:
+to `main`, with four independent checks:
 
 - `flake-check` - `nix flake check --no-build`
 - `build (home)` and `build (framework13)` - build the host `toplevel`, with
   `services.ollama` forced off: `ollama-cuda` is not in the binary cache and
   would compile past the job timeout
+- `build-home (wsl)` - build the WSL Home Manager activation package
 
 CI never decrypts the `.age` files and uses no repository secrets (only the
 per-run `GITHUB_TOKEN`, read-only). The Nix store cache is best effort and is
