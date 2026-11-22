@@ -74,7 +74,9 @@ in
       docker-compose
       # Language/runtime/tooling baseline.
       nodejs
+      bun
       python3
+      uv
       pandoc
       go-grip
       github-copilot-cli

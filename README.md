@@ -92,3 +92,30 @@ It is very important to clean from time to time your nix installation especially
 sudo nix-collect-garbage -d
 nix-store --optimise
 ```
+
+## Builds
+
+Nix builds are keyed by the hash of their inputs (the `.drv`), and every build goes
+through the same `nix-daemon`. Consequences worth remembering:
+
+- **Identical builds are shared.** If two commands need the same derivation, the daemon
+  builds it once and the second one waits for it. Start build 1 (10 min), wait 5 min,
+  start build 2: both finish at minute 10. A finished build is never repeated.
+- **Builds run in parallel, not in order.** The terminal only shows the last log line of
+  one build; quiet ones (e.g. a `curl` download retrying) print nothing. Use
+  `nom` or `--log-format bar-with-logs` to see them all.
+- **One failure aborts the whole switch** and kills builds still running, and a killed
+  build restarts from scratch. Finished derivations (e.g. `*-go-modules`) are kept.
+- **Protect a slow build** (e.g. the `ollama-cuda` compile after a `flake.lock` bump) by
+  building it alone first, so an unrelated failure cannot kill it:
+
+  ```shell
+  nix build .#nixosConfigurations.home.config.services.ollama.package
+  sudo nixos-rebuild switch --flake .#home
+  ```
+
+  Or let independent builds continue past a failure with `--option keep-going true`.
+- **Preview what a switch will do** without building: `nix build .#nixosConfigurations.home.config.system.build.toplevel --dry-run`
+  (derivations to build vs paths to fetch).
+- Packages removed from nixpkgs (e.g. `brave`) only break the build after a
+  `nix flake update`, so test with the dry run above before a long switch.

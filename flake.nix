@@ -32,6 +32,7 @@
 
       packages.${system} = {
         inherit (pkgs) helium;
+        tode = pkgs.callPackage ./pkgs/tode.nix { };
         default = pkgs.helium;
       };
 

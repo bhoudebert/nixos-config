@@ -20,7 +20,6 @@
       [
         # General browsing.
         librewolf
-        brave
         chromium
         # Communication/media apps.
         discord

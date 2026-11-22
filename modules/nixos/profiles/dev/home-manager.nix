@@ -89,12 +89,12 @@
       shellAliases = {
         # Richer file listing.
         ll = "exa -al";
-        # Shortcut for an external Claude runner.
-        claude = "nix run github:ryoppippi/nix-claude-code";
       };
       initContent = ''
         # Auto-load per-project environments.
         eval "$(direnv hook zsh)"
+        # Claude runner: function (not alias) so flags like --resume reach claude, not nix.
+        claude() { nix run github:ryoppippi/nix-claude-code -- "$@"; }
         # Keep personal scripts available ahead of the system PATH tail.
         export PATH="$HOME/.local/bin:$PATH"
       '';
